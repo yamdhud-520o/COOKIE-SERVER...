@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Automation Suite | NeoNexus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #e0e4f0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00b4ff, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #7f8fa4;
+            margin-top: 0.5rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header i {
+            color: #3b82f6;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #9ca3af;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Status Indicators */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Logs panel */
+        .logs-container {
+            background: #0f172a;
+            border-radius: 16px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+        }
+
+        .log-entry {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .log-time {
+            color: #64748b;
+            font-size: 0.7rem;
+            min-width: 85px;
+        }
+
+        .log-message {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .log-info .log-message { color: #60a5fa; }
+        .log-success .log-message { color: #34d399; }
+        .log-error .log-message { color: #f87171; }
+        .log-warn .log-message { color: #fbbf24; }
+
+        /* Action bar */
+        .action-bar {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .grid { grid-template-columns: 1fr; }
+            .action-bar { flex-direction: column; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Facebook Automation Suite</h1>
+            <p>NeoNexus | Advanced Group Messaging System</p>
+        </div>
+
+        <div class="action-bar">
+            <div class="status-badge" id="statusBadge">
+                <span>⚫</span> <span id="statusText">Offline</span>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="startBtn">▶ START</button>
+                <button class="btn btn-danger" id="stopBtn">⏹ STOP</button>
+                <button class="btn btn-outline" id="refreshLogsBtn">🔄 Refresh Logs</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Cookies Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <span>🍪</span> Cookie Manager
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <label>📝 Paste Single Cookie</label>
+                        <textarea id="singleCookie" rows="2" placeholder="c_user=123456789; xs=abcdefgh; ..."></textarea>
+                        <div class="button-group" style="margin-top: 0.5rem;">
+                            <button class="btn btn-primary" id="addCookieBtn">+ Add Cookie</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>📁 Multi Cookies (one per line)</label>
+                        <textarea id="multiCookies" rows="4" placeholder="c_user=111; xs=aaa;&#10;c_user=222; xs=bbb;&#10;c_user=333; xs=ccc;"></textarea>
+                        <div class="button-group" style="margin-top: 0.5rem;">
+                            <button class="btn btn-success" id="uploadCookiesBtn">📤 Upload Cookies File</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <span>⚙️</span> Campaign Settings
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <label>👥 Group UID</label>
+                        <input type="text" id="groupUid" placeholder="Facebook Group ID">
+                    </div>
+                    <div class="input-group">
+                        <label>🎯 Hater Name / Target</label>
+                        <input type="text" id="haterName" placeholder="Username or Page Name">
+                    </div>
+                    <div class="input-group">
+                        <label>⏱ Daily Interval (seconds)</label>
+                        <input type="number" id="dailySeconds" placeholder="60" value="60">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="saveConfigBtn">💾 Save Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <span>💬</span> Message Templates
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <label>📄 Messages File Content (one per line, use {hater} for target)</label>
+                        <textarea id="messagesContent" rows="6" placeholder="Hello {hater}, check this out!&#10;Hey {hater}, you won't believe this...&#10;What's up {hater}? Join us!"></textarea>
+                        <div class="button-group" style="margin-top: 0.5rem;">
+                            <button class="btn btn-success" id="uploadMessagesBtn">📤 Upload Messages</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Logs -->
+        <div class="card">
+            <div class="card-header">
+                <span>📡</span> Live Log Stream
+            </div>
+            <div class="card-body">
+                <div class="logs-container" id="logsContainer">
+                    <div class="log-entry">
+                        <div class="log-message">Waiting for logs...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+        
+        // Status update
+        async function updateStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                const badge = document.getElementById('statusBadge');
+                const statusText = document.getElementById('statusText');
+                if (data.isRunning) {
+                    badge.className = 'status-badge status-online';
+                    statusText.innerHTML = '● ACTIVE';
+                } else {
+                    badge.className = 'status-badge status-offline';
+                    statusText.innerHTML = '○ INACTIVE';
+                }
+            } catch(e) {
+                console.error('Status fetch error', e);
+            }
+        }
+        
+        // Load logs
+        async function loadLogs() {
+            try {
+                const res = await fetch('/api/logs?limit=200');
+                const logs = await res.json();
+                const container = document.getElementById('logsContainer');
+                if (logs.length === 0) {
+                    container.innerHTML = '<div class="log-entry"><div class="log-message">No logs available</div></div>';
+                    return;
+                }
+                container.innerHTML = logs.map(log => `
+                    <div class="log-entry log-${log.type}">
+                        <div class="log-time">${new Date(log.timestamp).toLocaleTimeString()}</div>
+                        <div class="log-message">${escapeHtml(log.message)}</div>
+                    </div>
+                `).join('');
+                container.scrollTop = 0;
+            } catch(e) {
+                console.error('Logs fetch error', e);
+            }
+        }
+        
+        // Load config
+        async function loadConfig() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                document.getElementById('groupUid').value = data.config.groupUid || '';
+                document.getElementById('haterName').value = data.config.haterName || '';
+                document.getElementById('dailySeconds').value = data.config.dailySeconds || 60;
+            } catch(e) {}
+        }
+        
+        // Load cookies and messages for display
+        async function loadCookiesAndMessages() {
+            try {
+                const cookiesRes = await fetch('/api/cookies');
+                const cookiesData = await cookiesRes.json();
+                if (cookiesData.cookies) {
+                    // Just for reference, don't populate full textarea for security
+                }
+                const msgsRes = await fetch('/api/messages');
+                const msgsData = await msgsRes.json();
+                if (msgsData.messages) {
+                    document.getElementById('messagesContent').value = msgsData.messages;
+                }
+            } catch(e) {}
+        }
+        
+        // Helper: escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Event handlers
+        document.getElementById('addCookieBtn').addEventListener('click', async () => {
+            const cookie = document.getElementById('singleCookie').value.trim();
+            if (!cookie) return alert('Please enter a cookie');
+            const res = await fetch('/api/cookies/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cookie })
+            });
+            if (res.ok) {
+                alert('Cookie added successfully!');
+                document.getElementById('singleCookie').value = '';
+                loadLogs();
+            } else {
+                alert('Failed to add cookie');
+            }
+        });
+        
+        document.getElementById('uploadCookiesBtn').addEventListener('click', async () => {
+            const cookies = document.getElementById('multiCookies').value;
+            if (!cookies) return alert('Please paste cookies first');
+            const res = await fetch('/api/cookies/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cookies })
+            });
+            if (res.ok) {
+                alert('Cookies file uploaded!');
+                document.getElementById('multiCookies').value = '';
+                loadLogs();
+            } else {
+                alert('Upload failed');
+            }
+        });
+        
+        document.getElementById('saveConfigBtn').addEventListener('click', async () => {
+            const groupUid = document.getElementById('groupUid').value;
+            const haterName = document.getElementById('haterName').value;
+            const dailySeconds = document.getElementById('dailySeconds').value;
+            const res = await fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupUid, haterName, dailySeconds: parseInt(dailySeconds) })
+            });
+            if (res.ok) {
+                alert('Settings saved!');
+                loadLogs();
+            } else {
+                alert('Failed to save');
+            }
+        });
+        
+        document.getElementById('uploadMessagesBtn').addEventListener('click', async () => {
+            const messages = document.getElementById('messagesContent').value;
+            if (!messages) return alert('Please enter messages');
+            const res = await fetch('/api/messages/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages })
+            });
+            if (res.ok) {
+                alert('Messages uploaded!');
+                loadLogs();
+            } else {
+                alert('Upload failed');
+            }
+        });
+        
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const res = await fetch('/api/start', { method: 'POST' });
+            if (res.ok) {
+                alert('Automation started!');
+                updateStatus();
+                loadLogs();
+            } else {
+                alert('Failed to start');
+            }
+        });
+        
+        document.getElementById('stopBtn').addEventListener('click', async () => {
+            const res = await fetch('/api/stop', { method: 'POST' });
+            if (res.ok) {
+                alert('Automation stopped');
+                updateStatus();
+                loadLogs();
+            } else {
+                alert('Failed to stop');
+            }
+        });
+        
+        document.getElementById('refreshLogsBtn').addEventListener('click', () => {
+            loadLogs();
+        });
+        
+        // Auto refresh every 3 seconds
+        setInterval(() => {
+            loadLogs();
+            updateStatus();
+        }, 3000);
+        
+        // Initial load
+        updateStatus();
+        loadConfig();
+        loadCookiesAndMessages();
+        loadLogs();
+    </script>
+</body>
+</html>
